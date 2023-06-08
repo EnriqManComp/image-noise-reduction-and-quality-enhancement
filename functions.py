@@ -38,19 +38,15 @@ class add_noise():
         noisy_image = self.image + noise
         noisy_image = np.clip(noisy_image, 0, 255).astype(np.uint8)
         return noisy_image
-
-'''class remove_noise():
-
-    def __init__(self,noisy_image):
-        self.noisy_image = noisy_image
     
-    def remove(self):
-        # Aplanar la imagen en un renglón variacional
-        pass'''
+########################### REMOVE NOISE ##################################
 
+class remove():
 
-
-
+    def __init__(self):
+        pass
+    
+    #def median(self,):
 
 
 ########################### UNSHARP MASKING ###############################
