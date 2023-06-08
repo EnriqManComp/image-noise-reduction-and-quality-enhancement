@@ -6,7 +6,7 @@ import skimage
 
 ############## MAIN ################
 # Add noise
-image_path = 'PDI/skull14l.jpg'
+image_path = 'images/skull14l.jpg'
 noisyObject = functions.add_noise(image_path)
 image = noisyObject.get_image()
 #noisy_image = noisyObject.additive(25,25)
