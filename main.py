@@ -1,8 +1,6 @@
 import numpy as np
-import cv2
 import functions
 import matplotlib.pyplot as plt
-import skimage
 
 ############## MAIN ################
 
@@ -13,8 +11,8 @@ image = noisyObject.get_image()
 #noisy_image = noisyObject.additive(25,25)
 noisy_image = noisyObject.impulsive(1000)
 
-# Remove noise
-filtered_image = cv2.medianBlur(noisy_image, 3)
+removeObject = functions.remove()
+filtered_image = removeObject.median(noisy_image)
 
 # Enhancement
 unsharpObject = functions.unsharp_mask_class()

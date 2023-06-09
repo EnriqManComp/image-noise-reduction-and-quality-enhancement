@@ -1,6 +1,5 @@
 import numpy as np
 import cv2
-import random
 from skimage.filters import gaussian
 
 
@@ -46,7 +45,19 @@ class remove():
     def __init__(self):
         pass
     
-    #def median(self,):
+    def median(self,image):
+        image_copy = np.copy(image)
+        for i in range(1,image_copy.shape[0]-1,1):
+            for j in range(1,image_copy.shape[1]-1,1):
+                neighbors_values = [image_copy[i-1,j],image_copy[i+1,j],image_copy[i,j-1],image_copy[i,j+1]]
+                neighbors_values.sort()
+                term1 = neighbors_values[(len(neighbors_values)//2)-1] / 2
+                term2 = neighbors_values[len(neighbors_values)//2] / 2
+                median = term1 + term2
+                image_copy[i,j] = np.int8(median)
+        return image_copy
+        
+        
 
 
 ########################### UNSHARP MASKING ###############################
