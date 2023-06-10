@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 ############## MAIN ################
 
 # Add noise
-image_path = 'images/skull14l.jpg'
+image_path = 'images/CCD.jpg'
 noisyObject = functions.add_noise(image_path)
 image = noisyObject.get_image()
 #noisy_image = noisyObject.additive(25,25)
@@ -16,7 +16,15 @@ filtered_image = removeObject.median(noisy_image)
 
 # Enhancement
 unsharpObject = functions.unsharp_mask_class()
-unsharp_image = unsharpObject.unsharp(r_image=image,filtered_image=filtered_image,scale_factor=1.0)
+unsharp_image = unsharpObject.unsharp(r_image=image,filtered_image=filtered_image,scale_factor=200.)
+
+# Histogram
+histObject = functions.histog()
+hist = histObject.match_histog(image,image)
+
+
+
+
 
 ############## Visualization #############
 
@@ -30,5 +38,6 @@ axarr[1,0].set_title('Filtered Image')
 axarr[1,1].imshow(unsharp_image, cmap='gray')
 axarr[1,1].set_title('Unsharp Image')
 plt.show()
-
+plt.bar(range(256), hist)
+plt.show()
 

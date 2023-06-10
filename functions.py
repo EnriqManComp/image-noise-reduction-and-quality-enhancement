@@ -47,14 +47,15 @@ class remove():
     
     def median(self,image):
         image_copy = np.copy(image)
-        for i in range(1,image_copy.shape[0]-1,1):
-            for j in range(1,image_copy.shape[1]-1,1):
-                neighbors_values = [image_copy[i-1,j],image_copy[i+1,j],image_copy[i,j-1],image_copy[i,j+1]]
-                neighbors_values.sort()
-                term1 = neighbors_values[(len(neighbors_values)//2)-1] / 2
-                term2 = neighbors_values[len(neighbors_values)//2] / 2
-                median = term1 + term2
-                image_copy[i,j] = np.int8(median)
+        for iter in range(3):            
+            for i in range(1,image_copy.shape[0]-1,1):
+                for j in range(1,image_copy.shape[1]-1,1):
+                    neighbors_values = [image_copy[i-1,j],image_copy[i+1,j],image_copy[i,j-1],image_copy[i,j+1]]
+                    neighbors_values.sort()
+                    term1 = neighbors_values[(len(neighbors_values)//2)-1] / 2
+                    term2 = neighbors_values[len(neighbors_values)//2] / 2
+                    median = term1 + term2
+                    image_copy[i,j] = np.int8(median)
         return image_copy
         
         
@@ -72,3 +73,25 @@ class unsharp_mask_class():
         img = scale_factor*(r_image - filtered_image)
         unsharp_image = r_image + img
         return unsharp_image
+
+######################## HISTOGRAM TECHNIQUES #############################
+
+class histog():
+
+    def __init__(self):
+        pass
+    
+    def equalization(image):
+        # Using local hist
+        pass
+
+    def match_histog(self,image,ref_image):
+        # Another image
+        n = image.copy()
+        n=n.flatten()
+        histog = [0] * 256
+        for intensity in n:
+            histog[intensity] += 1
+        return histog
+
+    
