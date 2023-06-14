@@ -8,15 +8,15 @@ import matplotlib.pyplot as plt
 image_path = 'images/CCD.jpg'
 noisyObject = functions.add_noise(image_path)
 image = noisyObject.get_image()
-#noisy_image = noisyObject.additive(25,25)
+#noisy_image = noisyObject.additive(0,20)
 noisy_image = noisyObject.impulsive(1000)
 
 removeObject = functions.remove()
-filtered_image = removeObject.median(noisy_image)
+filtered_image = removeObject.median(noisy_image,5,25)
 
 # Enhancement
 unsharpObject = functions.unsharp_mask_class()
-unsharp_image = unsharpObject.unsharp(r_image=image,filtered_image=filtered_image,scale_factor=200.)
+unsharp_image = unsharpObject.unsharp(r_image=image,filtered_image=filtered_image,scale_factor=1.)
 
 # Histogram
 histObject = functions.histog()
