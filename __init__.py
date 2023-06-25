@@ -1,2 +1,3 @@
-from . import functions
+from . import noise
+from . import enhancement
 from . import main
