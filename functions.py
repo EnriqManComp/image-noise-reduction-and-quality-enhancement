@@ -2,6 +2,7 @@ import numpy as np
 import cv2
 from skimage.filters import gaussian
 import math
+from PIL import Image
 
 
 ############## NOISE EVENTS ################
@@ -110,17 +111,141 @@ class histog():
     def __init__(self):
         pass
     
-    def equalization(image):
-        # Using local hist
-        pass
+    def histogram_equalization(self, image):
+        # Obtener el histograma de la imagen
+        hist = np.zeros(256, dtype=int)
+        for i in range(image.shape[0]):
+            for j in range(image.shape[1]):
+                hist[image[i, j]] += 1
 
-    def match_histog(self,image,ref_image):
-        # Another image
-        n = image.copy()
-        n=n.flatten()
-        histog = [0] * 256
-        for intensity in n:
-            histog[intensity] += 1
-        return histog
+        # Calcular la función de distribución acumulativa (CDF)
+        cdf = np.cumsum(hist)
 
+        # Normalizar el CDF al rango [0, 1]
+        cdf_normalized = cdf / float(np.sum(hist))
+
+        # Aplicar la función exponencial para ajustar el histograma
+        gamma = 0.5  # Parámetro de ajuste
+        adjusted_cdf = cdf_normalized ** gamma
+
+        # Mapear los valores de píxeles originales a los nuevos valores ajustados
+        adjusted_image = np.zeros_like(image)
+        for i in range(image.shape[0]):
+            for j in range(image.shape[1]):
+                pixel_value = image[i, j]
+                adjusted_pixel_value = int(adjusted_cdf[pixel_value] * 255)
+                adjusted_image[i, j] = adjusted_pixel_value
+
+        return adjusted_image
     
+
+    def sqrt_contrast(image):
+     # Obtener las dimensiones de la imagen
+      height, width = image.shape
+
+     # Aplicar la función de raíz cuadrada a cada píxel de la imagen
+      adjusted_image = np.zeros_like(image, dtype=np.uint8)
+      for i in range(height):
+          for j in range(width):
+            pixel_val = image[i, j]
+            adjusted_val = int(np.sqrt(pixel_val))
+            adjusted_image[i, j] = adjusted_val
+
+      return adjusted_image
+
+
+    def linear_contrast(image):
+        # Obtener las dimensiones de la imagen
+       height, width = image.shape
+
+        # Encontrar el valor mínimo y máximo de intensidad en la imagen
+       min_val = float('inf')
+       max_val = float('-inf')
+       for i in range(height):
+          for j in range(width):
+              pixel_val = image[i, j]
+              if pixel_val < min_val:
+                  min_val = pixel_val
+              if pixel_val > max_val:
+                  max_val = pixel_val
+
+        # Calcular la diferencia entre el máximo y mínimo
+       diff = max_val - min_val
+
+        # Asegurarse de que la diferencia no sea cero para evitar división por cero
+       if diff == 0:
+           diff = 1
+
+        # Aplicar la normalización lineal a cada píxel de la imagen
+       adjusted_image = np.zeros_like(image, dtype=np.uint8)
+       for i in range(height):
+            for j in range(width):
+               pixel_val = image[i, j]
+               adjusted_val = ((pixel_val - min_val) * 255 / diff).astype(np.uint8)
+               adjusted_image[i, j] = adjusted_val
+
+       return adjusted_image
+      
+     
+
+    def log_contrast(image):
+     # Obtener las dimensiones de la imagen
+     height, width = image.shape
+
+     # Definir el factor de ajuste para controlar la intensidad
+     factor = 255 / math.log(256)
+
+     # Aplicar la función de logaritmo a cada píxel de la imagen
+     adjusted_image = np.zeros_like(image, dtype=np.uint8)
+     for i in range(height):
+        for j in range(width):
+            pixel_val = image[i, j]
+            adjusted_val = int(factor * math.log(1 + pixel_val))
+            adjusted_image[i, j] = adjusted_val
+
+     return adjusted_image
+
+
+
+
+
+
+    def calc_histog(self,imagen):
+        histograma = [0] * 256
+        width, height = imagen.size
+
+        for y in range(height):
+            for x in range(width):
+                pixel = imagen.getpixel((x, y))
+                nivel_gris = pixel  
+                histograma[nivel_gris] += 1
+
+        return histograma
+
+    def calc_cdf(self,histograma):
+        cdf = [0] * 256
+        cdf[0] = histograma[0]
+        for i in range(1, 256):
+            cdf[i] = cdf[i - 1] + histograma[i]
+
+        return cdf
+    def especificar_niveles_grises(self,imagen_entrada, imagen_referencia):
+        
+        histograma_entrada = self.calc_histog(imagen_entrada)
+        cdf_entrada = self.calc_cdf(histograma_entrada)
+
+        histograma_referencia = self.calc_histog(imagen_referencia)
+        cdf_referencia = self.calc_cdf(histograma_referencia)
+        
+        nueva_imagen = Image.new('L', imagen_entrada.size)  # Crear nueva imagen en escala de grises
+        
+        width, height = imagen_entrada.size
+        for y in range(height):
+            for x in range(width):
+                pixel_entrada = imagen_entrada.getpixel((x, y))
+                nivel_gris_entrada = pixel_entrada
+                nivel_gris_referencia = cdf_referencia.index(min(cdf_referencia, key=lambda x: abs(x - cdf_entrada[nivel_gris_entrada])))
+                nueva_imagen.putpixel((x, y), nivel_gris_referencia)
+
+        return nueva_imagen
+
