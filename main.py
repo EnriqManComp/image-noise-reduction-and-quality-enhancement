@@ -66,10 +66,10 @@ ref_image = cv2.imread(REFERENCE_IMAGE_PATH,0) /255.0
 # Add noise
 noisyObject = noise.noise()
 #noisy_image,noise = noisyObject.additive(target_image,0,10)
-noisy_image = noisyObject.impulsive(target_image,1000)
+noisy_image = noisyObject.impulsive(target_image,800)
 
 # Remove noise
-#result_image = noisyObject.rem_impulsive_noise(noisy_image)
+result_image = noisyObject.rem_impulsive_noise(noisy_image)
 result_image2 = noisyObject.rem_impulsive_noise_unsharp(noisy_image)
 #target_result_diff = target_image - result_image
 
@@ -99,18 +99,18 @@ result_image2 = noisyObject.rem_impulsive_noise_unsharp(noisy_image)
 
 ############## Visualization #############
 
-fig, axarr = plt.subplots(1,2)
+fig, axarr = plt.subplots(1,3)
 axarr[0].imshow(target_image, cmap='gray')
 axarr[0].set_title('Target Image')
 #axarr[1].imshow(noisy_image, cmap='gray')
 #axarr[1].set_title('Noisy image')
-#axarr[1].imshow(gaussian_img, cmap='gray')
-#axarr[1].set_title('Gaussian Image')
+axarr[1].imshow(result_image, cmap='gray')
+axarr[1].set_title('Method1')
 #axarr[1].imshow(res, cmap='gray')
 #axarr[1].set_title('Mask')
-axarr[1].imshow(result_image2, cmap='gray')
-axarr[1].set_title('Unsharp Mask')
-#axarr[1,0].imshow(result_image2, cmap='gray')
+axarr[2].imshow(result_image2, cmap='gray')
+axarr[2].set_title('Unsharp Mask')
+#axarr[1].imshow(result_image, cmap='gray')
 #axarr[1,0].set_title('Remove Gaussian Additive Image')
 #axarr[1,1].imshow(noisy_result_image2, cmap='gray')
 #axarr[1,1].set_title('Noisy Image - Result Image')
