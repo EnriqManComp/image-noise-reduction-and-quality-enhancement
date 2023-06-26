@@ -4,9 +4,11 @@ import enhancement
 import matplotlib.pyplot as plt
 import cv2
 from PIL import Image 
+from skimage.filters import gaussian
 
 ############## MAIN ################
 
+'''
 
  # Cargar la imagen
 image = cv2.imread('original2.jpg', 0)  # Lee la imagen en escala de grises
@@ -45,24 +47,35 @@ cv2.imshow("Log Contrast", log_contrast_image)
 # Esperar a que se presione una tecla para cerrar las ventanas
 cv2.waitKey(0)
 cv2.destroyAllWindows()
-
+'''
 
 
 ########### NOISE REMOVING ##############
-'''
-# IMAGES
+
+# Image paths
 IMAGE_PATH = 'original2.jpg'
 REFERENCE_IMAGE_PATH = 'ref.jpg'
 
+# Read images
+target_image = cv2.imread(IMAGE_PATH,0)/ 255.0
+ref_image = cv2.imread(REFERENCE_IMAGE_PATH,0) /255.0
+
+
+
+
 # Add noise
-noisyObject = noise.add_noise(IMAGE_PATH)
-image = noisyObject.get_image()
-#noisy_image = noisyObject.additive(0,20)
-#noisy_image = noisyObject.impulsive(500)
-noisyObject2 = noise.add_noise(REFERENCE_IMAGE_PATH)
-ref_image = noisyObject2.get_image()
+noisyObject = noise.noise()
+#noisy_image,noise = noisyObject.additive(target_image,0,10)
+noisy_image = noisyObject.impulsive(target_image,1000)
+
+# Remove noise
+#result_image = noisyObject.rem_impulsive_noise(noisy_image)
+result_image2 = noisyObject.rem_impulsive_noise_unsharp(noisy_image)
+#target_result_diff = target_image - result_image
 
 
+#result_image2 = noisyObject.rem(noisy_image)
+#noisy_result_image2 = noisy_image - result_image2
 
 #removeObject = noise.remove_noise()
 #filtered_image = removeObject.rem(noisy_image)
@@ -73,35 +86,40 @@ ref_image = noisyObject2.get_image()
 #unsharp_image = unsharpObject.unsharp(r_image=noisy_image,filtered_image=filtered_image,scale_factor=100.)
 
 # Histogram
-histObject = enhancement.histog()
+#histObject = enhancement.histog()
 
-imagen = histObject.spec(image,ref_image)
-hist,_ = histObject.calc_histog_cdf(imagen)
+#imagen = histObject.spec(image,ref_image)
+#hist,_ = histObject.calc_histog_cdf(imagen)
 #imagen = histObject.histogram_equalization(image)
 #hist2,cdf2 = histObject.calc_histog(imagen)
 #imagen = histObject.map(image,cdf1)
-cv2.imwrite('spec_image.jpg',imagen)
+#cv2.imwrite('spec_image.jpg',imagen)
 
 #imagen = histObject.especificar_niveles_grises(image, ref_image)
 
 ############## Visualization #############
 
-fig, axarr = plt.subplots(2,2)
-axarr[0,0].imshow(image, cmap='gray')
-axarr[0,0].set_title('Original Image')
-axarr[0,1].imshow(ref_image, cmap='gray')
-axarr[0,1].set_title('Noisy Image')
-#axarr[1,0].imshow(imagen, cmap='gray')
-axarr[1,0].set_title('Filtered Image')
-#axarr[1,1].imshow(unsharp_image, cmap='gray')
-axarr[1,1].set_title('Unsharp Image')
+fig, axarr = plt.subplots(1,2)
+axarr[0].imshow(target_image, cmap='gray')
+axarr[0].set_title('Target Image')
+#axarr[1].imshow(noisy_image, cmap='gray')
+#axarr[1].set_title('Noisy image')
+#axarr[1].imshow(gaussian_img, cmap='gray')
+#axarr[1].set_title('Gaussian Image')
+#axarr[1].imshow(res, cmap='gray')
+#axarr[1].set_title('Mask')
+axarr[1].imshow(result_image2, cmap='gray')
+axarr[1].set_title('Unsharp Mask')
+#axarr[1,0].imshow(result_image2, cmap='gray')
+#axarr[1,0].set_title('Remove Gaussian Additive Image')
+#axarr[1,1].imshow(noisy_result_image2, cmap='gray')
+#axarr[1,1].set_title('Noisy Image - Result Image')
 plt.show()
-plt.bar(range(256), hist)
-plt.title("Histograma de imagen original")
-plt.xlabel("Niveles de grises")
-plt.ylabel("Frecuencia de pixeles")
-plt.show()
+#lt.bar(range(256), hist)
+#plt.title("Histograma de imagen original")
+#plt.xlabel("Niveles de grises")
+#plt.ylabel("Frecuencia de pixeles")
+#plt.show()
 #plt.bar(range(256), cdf2)
 #plt.show()
 
-'''
