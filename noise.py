@@ -82,7 +82,7 @@ class noise():
         # Definir Imagen nueva
         image_copy = noisy_image.copy()
         # Pasado de Kernel 5x5 sobre la imagen
-        for i in range(5):
+        for i in range(1):
             for n in range(2,image_copy.shape[0]-2,1):
                 for m in range(2,image_copy.shape[1]-2,1):
                     kernel = np.copy(image_copy[n-2:n+3,m-2:m+3])

@@ -1,23 +1,8 @@
 import numpy as np
-import cv2
-from skimage.filters import gaussian
-import math
-from PIL import Image
 
 
-########################### UNSHARP MASKING ###############################
 
-class unsharp_mask_class():
 
-    def __init__(self):
-        pass
-
-    def unsharp(self,r_image,filtered_image,scale_factor):
-        #filtered_image = gaussian(filtered_image,sigma=1,mode='constant',cval=0.0)
-        img = scale_factor*(r_image - filtered_image)
-        unsharp_mask = r_image + img
-       
-        return unsharp_mask
 
 
 ######################## HISTOGRAM TECHNIQUES #############################
@@ -28,20 +13,15 @@ class histog():
         pass
     
     def histogram_equalization(self, image):
-        # Obtener el histograma de la imagen
-        hist = np.zeros(256, dtype=int)
-        for i in range(image.shape[0]):
-            for j in range(image.shape[1]):
-                hist[image[i, j]] += 1
-
-        # Calcular la función de distribución acumulativa (CDF)
+        hist,_ = self.calc_histog_cdf(image)
+        
         cdf = np.cumsum(hist)
-
+        
         # Normalizar el CDF al rango [0, 1]
         cdf_normalized = cdf / float(np.sum(hist))
 
         # Aplicar la función exponencial para ajustar el histograma
-        gamma = 0.5  # Parámetro de ajuste
+        gamma = 1.5  # Parámetro de ajuste
         adjusted_cdf = cdf_normalized ** gamma
 
         # Mapear los valores de píxeles originales a los nuevos valores ajustados
@@ -54,22 +34,6 @@ class histog():
 
         return adjusted_image
     
-
-    def sqrt_contrast(self, image):
-        # Obtener las dimensiones de la imagen
-        height, width = image.shape
-
-        # Aplicar la función de raíz cuadrada a cada píxel de la imagen
-        adjusted_image = np.zeros_like(image, dtype=np.uint8)
-        for i in range(height):
-            for j in range(width):
-                pixel_val = image[i, j]
-                adjusted_val = int(np.sqrt(pixel_val))
-                adjusted_image[i, j] = adjusted_val
-
-        return adjusted_image
-
-
     def linear_contrast(self, image):
         # Obtener las dimensiones de la imagen
         height, width = image.shape
@@ -101,29 +65,26 @@ class histog():
                 adjusted_image[i, j] = adjusted_val
 
         return adjusted_image
-
-    def log_contrast(self, image):
+    
+    def sqrt_contrast(self, image):
         # Obtener las dimensiones de la imagen
         height, width = image.shape
 
-        # Definir el factor de ajuste para controlar la intensidad
-        factor = 255 / math.log(256)
-
-        # Aplicar la función de logaritmo a cada píxel de la imagen
+        # Aplicar la función de raíz cuadrada a cada píxel de la imagen
         adjusted_image = np.zeros_like(image, dtype=np.uint8)
         for i in range(height):
             for j in range(width):
                 pixel_val = image[i, j]
-                adjusted_val = int(factor * math.log(1 + pixel_val))
+
+                # Ajustar los parámetros para obtener un mejor resultado
+                adjusted_val = int(np.sqrt(pixel_val) * 0.5)  # Multiplicar por un factor mayor para aumentar el contraste
+
+                # Limitar el valor ajustado para que esté en el rango de 0 a 255
+                adjusted_val = max(0, min(255, adjusted_val))
+
                 adjusted_image[i, j] = adjusted_val
 
         return adjusted_image
-    
-    
-
-
-
-
 
     # Especificacion con otra imagen
 
